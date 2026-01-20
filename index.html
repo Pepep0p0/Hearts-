@@ -1,209 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Museum of Us</title>
 
 <style>
 body {
-  margin:0;
-  background:#fff0f5;
-  font-family: system-ui;
-  overflow:hidden;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: #fdecef;
+  overflow: hidden;
 }
 
-.room {
-  position:absolute;
-  inset:0;
-  display:none;
-  background:linear-gradient(#fdecef 45%, #f8cfd9 45%);
-}
-.room.active { display:block; }
-
-.room::after {
-  content:"";
-  position:absolute;
-  bottom:0; left:0; right:0;
-  height:55%;
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 20px, transparent 20px 40px),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.25) 0 20px, transparent 20px 40px);
+.screen {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.title {
-  text-align:center;
-  font-weight:700;
-  margin-top:12px;
+.screen.active {
+  display: flex;
+}
+
+button {
+  padding: 12px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #ff7aa2;
+  color: white;
+  font-size: 16px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 
 .avatar {
-  position:absolute;
-  bottom:22%;
-  left:45%;
-  width:48px;
-  height:64px;
-  z-index:5;
-  transition:transform .6s;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #ffe0b2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin: 10px;
 }
 
-.hat { width:52px; height:14px; background:#f5d27a; border-radius:50%; margin:-6px auto 0; }
-.face { width:36px; height:36px; background:#ffd9c9; border-radius:50%; margin:4px auto; position:relative; }
-.eye { width:4px; height:4px; background:#333; border-radius:50%; position:absolute; top:14px; }
-.eye.left{left:10px} .eye.right{right:10px}
-.mouth{width:10px;height:6px;border-bottom:2px solid #444;border-radius:0 0 10px 10px;position:absolute;bottom:8px;left:50%;transform:translateX(-50%)}
-.blush{width:6px;height:6px;background:#ff9aa2;border-radius:50%;position:absolute;top:18px}
-.blush.left{left:4px}.blush.right{right:4px}
-.dress{width:48px;height:28px;background:radial-gradient(#fff 20%,transparent 21%);background-size:8px 8px;background-color:#a7c7e7;border-radius:0 0 12px 12px;margin:auto}
+.room {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 
 .artifact {
-  width:70px;height:70px;background:#fff;border-radius:12px;
-  box-shadow:0 6px #e3b6c2;
-  position:absolute;display:flex;align-items:center;justify-content:center;
-  font-size:28px; cursor:pointer;
-}
-
-.next {
-  position:absolute;right:16px;bottom:16px;
-  background:#ff7a9e;color:white;border:none;
-  padding:10px 16px;border-radius:20px;
-}
-
-#popup {
-  position:fixed;inset:0;background:rgba(0,0,0,.3);
-  display:none;align-items:center;justify-content:center;
-}
-#popup .card {
-  background:white;border-radius:16px;padding:20px;
-  width:90%;max-width:320px;text-align:center;
-}
-
-input, textarea { width:100%; padding:8px; margin-top:10px; }
-
-#hud {
-  position:fixed;bottom:10px;left:10px;
-  font-weight:600;
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
 }
 
 #musicToggle {
-  position:fixed;top:10px;right:10px;
-  background:#fff;border-radius:50%;padding:10px;
+  position: fixed;
+  top: 10px;
+  right: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="music" src="music.mp3" loop autoplay></audio>
+<!-- MUSIC -->
+<audio id="bgm" loop>
+  <source src="music.mp3.mp3" type="audio/mpeg">
+</audio>
+<button id="musicToggle">Music</button>
 
-<button id="musicToggle" onclick="toggleMusic()">🔊</button>
-
-<div id="hud">💋 <span id="kisses">0</span></div>
-
-<section class="room active">
-  <div class="title">Entrance Hall</div>
-  <div class="artifact" style="left:25%;top:38%" onclick="ask(0)">💌</div>
-  <div class="artifact" style="right:25%;top:38%" onclick="ask(1)">🧸</div>
-  <button class="next" onclick="nextRoom()">Next →</button>
-</section>
-
-<section class="room">
-  <div class="title">Memory Room</div>
-  <div class="artifact" style="left:30%;top:38%" onclick="ask(2)">📷</div>
-  <div class="artifact" style="right:30%;top:38%" onclick="ask(3)">📜</div>
-  <button class="next" onclick="nextRoom()">Next →</button>
-</section>
-
-<section class="room">
-  <div class="title">Feelings Room</div>
-  <div class="artifact" style="left:35%;top:38%" onclick="ask(4)">💗</div>
-  <button class="next" onclick="nextRoom()">Next →</button>
-</section>
-
-<section class="room">
-  <div class="title">Keepsake Room</div>
-  <div class="artifact" style="left:40%;top:38%" onclick="showCoupon()">🎁</div>
-</section>
-
-<div class="avatar" id="avatar">
-  <div class="hat"></div>
-  <div class="face">
-    <div class="eye left"></div><div class="eye right"></div>
-    <div class="mouth"></div>
-    <div class="blush left"></div><div class="blush right"></div>
-  </div>
-  <div class="dress"></div>
+<!-- CHARACTER SETUP -->
+<div id="setup" class="screen active">
+  <h2>Choose Your Character</h2>
+  <input id="fname" placeholder="First name" />
+  <input id="lname" placeholder="Last name" />
+  <div class="avatar">🙂</div>
+  <button onclick="startGame()">Start</button>
 </div>
 
-<div id="popup">
-  <div class="card">
-    <div id="question"></div>
-    <textarea id="answer" placeholder="Type anything…"></textarea>
-    <button onclick="submitAnswer()">Unlock 💋</button>
+<!-- ROOM 1 -->
+<div id="room1" class="screen">
+  <div class="room" style="background:#e0f7fa">
+    <h2>Room 1: Memories</h2>
+    <div class="artifact" style="top:40%; left:20%" onclick="unlock(1)">💌</div>
+    <div class="artifact" style="top:40%; left:60%" onclick="unlock(1)">🧸</div>
+    <button style="position:absolute; bottom:20px; right:20px" onclick="nextRoom(2)">Next</button>
   </div>
+</div>
+
+<!-- ROOM 2 -->
+<div id="room2" class="screen">
+  <div class="room" style="background:#fff3e0">
+    <h2>Room 2: Adventures</h2>
+    <div class="artifact" style="top:40%; left:35%" onclick="unlock(2)">📷</div>
+    <button style="position:absolute; bottom:20px; right:20px" onclick="nextRoom(3)">Next</button>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div id="final" class="screen">
+  <h2>Will you be my Valentine?</h2>
+  <label>
+    <input type="checkbox" /> I agree to send Dedso rupiya
+  </label>
+  <p>You earned <span id="kisses">0</span> kisses 💋</p>
 </div>
 
 <script>
-const questions = [
-  "How did we first feel special?",
-  "What reminds you of us?",
-  "What memory do you love the most?",
-  "What makes you feel safe with me?",
-  "What do you love about us?"
-];
+let kissCount = 0;
 
-let answers = [];
-let kisses = 0;
-let qIndex = null;
-let room = 0;
-
-const rooms = document.querySelectorAll('.room');
-const popup = document.getElementById('popup');
-const music = document.getElementById('music');
-
-function nextRoom() {
-  rooms[room].classList.remove('active');
-  room++;
-  if (rooms[room]) rooms[room].classList.add('active');
+function startGame() {
+  const f = fname.value.trim();
+  const l = lname.value.trim();
+  if (!f || !l) {
+    alert("Enter both names");
+    return;
+  }
+  if (f === "Amena" && l === "Farooq") {
+    kissCount += 10;
+  }
+  show("room1");
 }
 
-function ask(i) {
-  qIndex = i;
-  document.getElementById('question').innerText = questions[i];
-  popup.style.display = 'flex';
+function unlock(room) {
+  kissCount += 1;
+  alert("Artifact unlocked 💋");
 }
 
-function submitAnswer() {
-  answers[qIndex] = document.getElementById('answer').value;
-  kisses++;
-  document.getElementById('kisses').innerText = kisses;
-  popup.style.display = 'none';
-  document.getElementById('answer').value = "";
+function nextRoom(n) {
+  if (n === 3) {
+    document.getElementById("kisses").innerText = kissCount;
+    show("final");
+  } else {
+    show("room" + n);
+  }
 }
 
-function showCoupon() {
-  document.body.innerHTML = `
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;">
-    <div style="border:2px dashed #ff7a9e;padding:30px;border-radius:16px;text-align:center">
-      <h2>💋 Kiss Coupon</h2>
-      <p>${kisses} kisses earned</p>
-      <label><input type="checkbox"> I agree to send Dedso rupiya</label><br><br>
-      <button onclick="download()">Download Answers</button>
-    </div>
-  </div>`;
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-function download() {
-  const blob = new Blob([JSON.stringify(answers,null,2)], {type:'text/plain'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'answers.txt';
-  a.click();
-}
-
-function toggleMusic() {
-  music.paused ? music.play() : music.pause();
-}
+const bgm = document.getElementById("bgm");
+document.getElementById("musicToggle").onclick = () => {
+  if (bgm.paused) bgm.play();
+  else bgm.pause();
+};
 </script>
 
 </body>

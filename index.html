@@ -6,247 +6,203 @@
 <title>Museum of Us</title>
 
 <style>
-:root {
-  --bg: #fff6f8;
-  --pink: #f6a6c1;
-  --soft: #ffeef4;
-  --ink: #4b2c3a;
-}
-
-* { box-sizing: border-box; font-family: "Trebuchet MS", system-ui; }
-
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  overflow-x: hidden;
+  margin:0;
+  background:#fff0f5;
+  font-family: system-ui;
+  overflow:hidden;
 }
 
-/* ---------- SCREENS ---------- */
-.screen {
-  display: none;
-  padding: 20px;
+.room {
+  position:absolute;
+  inset:0;
+  display:none;
+  background:linear-gradient(#fdecef 45%, #f8cfd9 45%);
 }
-.screen.active { display: block; }
+.room.active { display:block; }
 
-h1, h2 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-/* ---------- BUTTONS ---------- */
-button {
-  background: var(--pink);
-  border: none;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
+.room::after {
+  content:"";
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:55%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 20px, transparent 20px 40px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.25) 0 20px, transparent 20px 40px);
 }
 
-/* ---------- AVATAR ---------- */
-#avatar {
-  position: absolute;
-  bottom: 80px;
-  left: 20px;
-  width: 80px;
-  height: 120px;
-  transition: left 1s ease-in-out;
+.title {
+  text-align:center;
+  font-weight:700;
+  margin-top:12px;
 }
 
-.body {
-  width: 60px;
-  height: 60px;
-  background: #ffd8c9;
-  border-radius: 50%;
-  margin: auto;
+.avatar {
+  position:absolute;
+  bottom:22%;
+  left:45%;
+  width:48px;
+  height:64px;
+  z-index:5;
+  transition:transform .6s;
 }
 
-.dress {
-  width: 80px;
-  height: 60px;
-  border-radius: 0 0 40px 40px;
-  margin-top: -10px;
-}
-
-.pattern-yellow { background: yellow; background-image: radial-gradient(red 2px, transparent 2px); background-size: 10px 10px; }
-.pattern-red { background: #d94b4b; background-image: repeating-linear-gradient(45deg, white 0 2px, transparent 2px 6px); }
-.pattern-lavender { background: lavender; background-image: radial-gradient(white 1px, transparent 1px); background-size: 8px 8px; }
-.pattern-mint { background: #aee; background-image: repeating-linear-gradient(90deg, white 0 2px, transparent 2px 6px); }
-
-.headgear {
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  font-size: 30px;
-}
-
-/* ---------- MUSEUM ---------- */
-#museum {
-  position: relative;
-  height: 70vh;
-  background: linear-gradient(#fff, #ffe6ef);
-  border-radius: 20px;
-  margin-top: 20px;
-}
+.hat { width:52px; height:14px; background:#f5d27a; border-radius:50%; margin:-6px auto 0; }
+.face { width:36px; height:36px; background:#ffd9c9; border-radius:50%; margin:4px auto; position:relative; }
+.eye { width:4px; height:4px; background:#333; border-radius:50%; position:absolute; top:14px; }
+.eye.left{left:10px} .eye.right{right:10px}
+.mouth{width:10px;height:6px;border-bottom:2px solid #444;border-radius:0 0 10px 10px;position:absolute;bottom:8px;left:50%;transform:translateX(-50%)}
+.blush{width:6px;height:6px;background:#ff9aa2;border-radius:50%;position:absolute;top:18px}
+.blush.left{left:4px}.blush.right{right:4px}
+.dress{width:48px;height:28px;background:radial-gradient(#fff 20%,transparent 21%);background-size:8px 8px;background-color:#a7c7e7;border-radius:0 0 12px 12px;margin:auto}
 
 .artifact {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  background: var(--soft);
-  border-radius: 12px;
-  text-align: center;
-  padding-top: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  cursor: pointer;
+  width:70px;height:70px;background:#fff;border-radius:12px;
+  box-shadow:0 6px #e3b6c2;
+  position:absolute;display:flex;align-items:center;justify-content:center;
+  font-size:28px; cursor:pointer;
 }
 
-.artifact.locked { opacity: 0.4; }
-.artifact.unlocked { background: #fff; border: 2px solid var(--pink); }
-
-/* ---------- MODAL ---------- */
-#modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  align-items: center;
-  justify-content: center;
+.next {
+  position:absolute;right:16px;bottom:16px;
+  background:#ff7a9e;color:white;border:none;
+  padding:10px 16px;border-radius:20px;
 }
 
-#modalContent {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 400px;
+#popup {
+  position:fixed;inset:0;background:rgba(0,0,0,.3);
+  display:none;align-items:center;justify-content:center;
+}
+#popup .card {
+  background:white;border-radius:16px;padding:20px;
+  width:90%;max-width:320px;text-align:center;
 }
 
-/* ---------- COUPON ---------- */
-#coupon {
-  border: 2px dashed var(--pink);
-  padding: 20px;
-  border-radius: 16px;
-  background: #fff;
-  text-align: center;
-  margin-top: 20px;
+input, textarea { width:100%; padding:8px; margin-top:10px; }
+
+#hud {
+  position:fixed;bottom:10px;left:10px;
+  font-weight:600;
+}
+
+#musicToggle {
+  position:fixed;top:10px;right:10px;
+  background:#fff;border-radius:50%;padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="start" class="screen active">
-  <h1>Museum of Us</h1>
-  <input id="fname" placeholder="First name"><br><br>
-  <input id="lname" placeholder="Last name"><br><br>
+<audio id="music" src="music.mp3" loop autoplay></audio>
 
-  <h3>Choose dress</h3>
-  <select id="dress">
-    <option value="pattern-yellow">Yellow (Polka)</option>
-    <option value="pattern-red">Red (Floral)</option>
-    <option value="pattern-lavender">Lavender (Stars)</option>
-    <option value="pattern-mint">Mint (Stripes)</option>
-  </select>
+<button id="musicToggle" onclick="toggleMusic()">🔊</button>
 
-  <h3>Headgear</h3>
-  <select id="headgear">
-    <option value="">None</option>
-    <option value="🌞">Sun Hat</option>
-    <option value="🎀">Bow</option>
-    <option value="🌸">Flower Crown</option>
-  </select>
+<div id="hud">💋 <span id="kisses">0</span></div>
 
-  <br><br>
-  <button onclick="startGame()">Start Tour</button>
+<section class="room active">
+  <div class="title">Entrance Hall</div>
+  <div class="artifact" style="left:25%;top:38%" onclick="ask(0)">💌</div>
+  <div class="artifact" style="right:25%;top:38%" onclick="ask(1)">🧸</div>
+  <button class="next" onclick="nextRoom()">Next →</button>
+</section>
+
+<section class="room">
+  <div class="title">Memory Room</div>
+  <div class="artifact" style="left:30%;top:38%" onclick="ask(2)">📷</div>
+  <div class="artifact" style="right:30%;top:38%" onclick="ask(3)">📜</div>
+  <button class="next" onclick="nextRoom()">Next →</button>
+</section>
+
+<section class="room">
+  <div class="title">Feelings Room</div>
+  <div class="artifact" style="left:35%;top:38%" onclick="ask(4)">💗</div>
+  <button class="next" onclick="nextRoom()">Next →</button>
+</section>
+
+<section class="room">
+  <div class="title">Keepsake Room</div>
+  <div class="artifact" style="left:40%;top:38%" onclick="showCoupon()">🎁</div>
+</section>
+
+<div class="avatar" id="avatar">
+  <div class="hat"></div>
+  <div class="face">
+    <div class="eye left"></div><div class="eye right"></div>
+    <div class="mouth"></div>
+    <div class="blush left"></div><div class="blush right"></div>
+  </div>
+  <div class="dress"></div>
 </div>
 
-<div id="game" class="screen">
-  <div id="museum">
-    <div id="avatar">
-      <div class="headgear" id="hg"></div>
-      <div class="body"></div>
-      <div class="dress" id="dressLayer"></div>
-    </div>
-
-    <div class="artifact locked" style="left:60%;top:60%" onclick="visitArtifact(0)">📸</div>
-    <div class="artifact locked" style="left:20%;top:50%" onclick="visitArtifact(1)">💌</div>
-    <div class="artifact locked" style="left:40%;top:30%" onclick="visitArtifact(2)">🧸</div>
+<div id="popup">
+  <div class="card">
+    <div id="question"></div>
+    <textarea id="answer" placeholder="Type anything…"></textarea>
+    <button onclick="submitAnswer()">Unlock 💋</button>
   </div>
 </div>
-
-<div id="modal">
-  <div id="modalContent">
-    <p id="question"></p>
-    <textarea id="answer" placeholder="Type anything..."></textarea><br><br>
-    <button onclick="submitAnswer()">Unlock</button>
-  </div>
-</div>
-
-<div id="end" class="screen">
-  <h2>One last thing…</h2>
-  <label><input type="checkbox" id="agree"> I agree to send Dedso rupiya</label><br><br>
-  <button onclick="finish()">Finish</button>
-
-  <div id="coupon"></div>
-</div>
-
-<audio id="music" src="music.mp3" loop></audio>
 
 <script>
-let kisses = 0;
-let currentArtifact = null;
-
 const questions = [
-  "What moment with me made you feel safe?",
-  "What do you love about us?",
-  "What’s one memory you never want to forget?"
+  "How did we first feel special?",
+  "What reminds you of us?",
+  "What memory do you love the most?",
+  "What makes you feel safe with me?",
+  "What do you love about us?"
 ];
 
-function startGame() {
-  const f = fname.value.trim();
-  const l = lname.value.trim();
-  if (f.toLowerCase() === "amena" && l.toLowerCase() === "farooq") kisses += 10;
+let answers = [];
+let kisses = 0;
+let qIndex = null;
+let room = 0;
 
-  dressLayer.className = "dress " + dress.value;
-  hg.textContent = headgear.value;
+const rooms = document.querySelectorAll('.room');
+const popup = document.getElementById('popup');
+const music = document.getElementById('music');
 
-  start.classList.remove("active");
-  game.classList.add("active");
-
-  music.play().catch(()=>{});
+function nextRoom() {
+  rooms[room].classList.remove('active');
+  room++;
+  if (rooms[room]) rooms[room].classList.add('active');
 }
 
-function visitArtifact(i) {
-  currentArtifact = i;
-  avatar.style.left = document.querySelectorAll('.artifact')[i].style.left;
-  setTimeout(()=>{
-    question.textContent = questions[i];
-    modal.style.display = "flex";
-  },1000);
+function ask(i) {
+  qIndex = i;
+  document.getElementById('question').innerText = questions[i];
+  popup.style.display = 'flex';
 }
 
 function submitAnswer() {
+  answers[qIndex] = document.getElementById('answer').value;
   kisses++;
-  document.querySelectorAll('.artifact')[currentArtifact].classList.remove("locked");
-  document.querySelectorAll('.artifact')[currentArtifact].classList.add("unlocked");
-  modal.style.display = "none";
-
-  if (kisses >= questions.length + 1) {
-    game.classList.remove("active");
-    end.classList.add("active");
-  }
+  document.getElementById('kisses').innerText = kisses;
+  popup.style.display = 'none';
+  document.getElementById('answer').value = "";
 }
 
-function finish() {
-  if (!agree.checked) return;
-  coupon.innerHTML = `
-    <h3>Kiss Coupon</h3>
-    <p>Redeemable for</p>
-    <h1>${kisses} Kisses</h1>
-    <p>Valid forever ❤️</p>
-  `;
+function showCoupon() {
+  document.body.innerHTML = `
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;">
+    <div style="border:2px dashed #ff7a9e;padding:30px;border-radius:16px;text-align:center">
+      <h2>💋 Kiss Coupon</h2>
+      <p>${kisses} kisses earned</p>
+      <label><input type="checkbox"> I agree to send Dedso rupiya</label><br><br>
+      <button onclick="download()">Download Answers</button>
+    </div>
+  </div>`;
+}
+
+function download() {
+  const blob = new Blob([JSON.stringify(answers,null,2)], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'answers.txt';
+  a.click();
+}
+
+function toggleMusic() {
+  music.paused ? music.play() : music.pause();
 }
 </script>
 

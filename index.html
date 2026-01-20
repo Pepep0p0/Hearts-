@@ -1,70 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Museum of Us</title>
 
 <style>
+:root {
+  --bg: #fff6f8;
+  --pink: #f6a6c1;
+  --soft: #ffeef4;
+  --ink: #4b2c3a;
+}
+
+* { box-sizing: border-box; font-family: "Trebuchet MS", system-ui; }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #fff5f7;
-  color: #333;
-  text-align: center;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
 }
 
-.screen { display: none; padding: 24px; }
+/* ---------- SCREENS ---------- */
+.screen {
+  display: none;
+  padding: 20px;
+}
 .screen.active { display: block; }
 
-input, select, button {
-  padding: 10px;
-  margin: 8px;
-  font-size: 16px;
+h1, h2 {
+  text-align: center;
+  margin-bottom: 10px;
 }
 
+/* ---------- BUTTONS ---------- */
 button {
-  background: #ff6f91;
-  color: white;
+  background: var(--pink);
   border: none;
-  border-radius: 6px;
-}
-
-#avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: pink;
-  margin: 16px auto;
-}
-
-.artifacts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.artifact {
-  width: 110px;
-  height: 110px;
-  background: #ffe0e6;
+  padding: 12px 18px;
   border-radius: 12px;
-  margin: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 16px;
   cursor: pointer;
 }
 
-.artifact.unlocked {
-  background: #ffb3c7;
+/* ---------- AVATAR ---------- */
+#avatar {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  width: 80px;
+  height: 120px;
+  transition: left 1s ease-in-out;
 }
 
-#coupon {
-  border: 2px solid #333;
-  padding: 24px;
+.body {
+  width: 60px;
+  height: 60px;
+  background: #ffd8c9;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.dress {
+  width: 80px;
+  height: 60px;
+  border-radius: 0 0 40px 40px;
+  margin-top: -10px;
+}
+
+.pattern-yellow { background: yellow; background-image: radial-gradient(red 2px, transparent 2px); background-size: 10px 10px; }
+.pattern-red { background: #d94b4b; background-image: repeating-linear-gradient(45deg, white 0 2px, transparent 2px 6px); }
+.pattern-lavender { background: lavender; background-image: radial-gradient(white 1px, transparent 1px); background-size: 8px 8px; }
+.pattern-mint { background: #aee; background-image: repeating-linear-gradient(90deg, white 0 2px, transparent 2px 6px); }
+
+.headgear {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 30px;
+}
+
+/* ---------- MUSEUM ---------- */
+#museum {
+  position: relative;
+  height: 70vh;
+  background: linear-gradient(#fff, #ffe6ef);
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.artifact {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--soft);
   border-radius: 12px;
-  background: #fffafc;
+  text-align: center;
+  padding-top: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.artifact.locked { opacity: 0.4; }
+.artifact.unlocked { background: #fff; border: 2px solid var(--pink); }
+
+/* ---------- MODAL ---------- */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#modalContent {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+}
+
+/* ---------- COUPON ---------- */
+#coupon {
+  border: 2px dashed var(--pink);
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+  margin-top: 20px;
 }
 </style>
 </head>
@@ -73,135 +139,114 @@ button {
 
 <div id="start" class="screen active">
   <h1>Museum of Us</h1>
-  <p>Create your avatar to begin</p>
-  <input id="first" placeholder="First Name">
-  <input id="last" placeholder="Last Name">
-  <br>
-  <button onclick="startTour()">Start Tour 🎧</button>
-</div>
+  <input id="fname" placeholder="First name"><br><br>
+  <input id="lname" placeholder="Last name"><br><br>
 
-<div id="museum" class="screen">
-  <div id="avatar"></div>
-  <h2 id="roomTitle"></h2>
-  <div class="artifacts" id="artifacts"></div>
-  <p id="kissCount">💋 0 kisses</p>
-</div>
+  <h3>Choose dress</h3>
+  <select id="dress">
+    <option value="pattern-yellow">Yellow (Polka)</option>
+    <option value="pattern-red">Red (Floral)</option>
+    <option value="pattern-lavender">Lavender (Stars)</option>
+    <option value="pattern-mint">Mint (Stripes)</option>
+  </select>
 
-<div id="valentine" class="screen">
-  <h2>Will you be my Valentine?</h2>
-  <label>
-    <input type="checkbox" id="agree"> I agree to send Dedso rupiya
-  </label>
+  <h3>Headgear</h3>
+  <select id="headgear">
+    <option value="">None</option>
+    <option value="🌞">Sun Hat</option>
+    <option value="🎀">Bow</option>
+    <option value="🌸">Flower Crown</option>
+  </select>
+
   <br><br>
-  <button onclick="finish()" id="finishBtn" disabled>Continue</button>
+  <button onclick="startGame()">Start Tour</button>
 </div>
 
-<div id="final" class="screen">
-  <div id="coupon">
-    <h2>Kiss Coupon</h2>
-    <p id="finalName"></p>
-    <p id="finalKisses"></p>
-    <p>Redeemable anytime. No expiry.</p>
-    <button onclick="downloadAnswers()">Download Answers (Curator)</button>
+<div id="game" class="screen">
+  <div id="museum">
+    <div id="avatar">
+      <div class="headgear" id="hg"></div>
+      <div class="body"></div>
+      <div class="dress" id="dressLayer"></div>
+    </div>
+
+    <div class="artifact locked" style="left:60%;top:60%" onclick="visitArtifact(0)">📸</div>
+    <div class="artifact locked" style="left:20%;top:50%" onclick="visitArtifact(1)">💌</div>
+    <div class="artifact locked" style="left:40%;top:30%" onclick="visitArtifact(2)">🧸</div>
   </div>
 </div>
 
-<audio id="music" loop></audio>
+<div id="modal">
+  <div id="modalContent">
+    <p id="question"></p>
+    <textarea id="answer" placeholder="Type anything..."></textarea><br><br>
+    <button onclick="submitAnswer()">Unlock</button>
+  </div>
+</div>
+
+<div id="end" class="screen">
+  <h2>One last thing…</h2>
+  <label><input type="checkbox" id="agree"> I agree to send Dedso rupiya</label><br><br>
+  <button onclick="finish()">Finish</button>
+
+  <div id="coupon"></div>
+</div>
+
+<audio id="music" src="music.mp3" loop></audio>
 
 <script>
-const rooms = [
- ["Where did we first talk properly for hours?",
-  "What was the first thing you noticed about me?",
-  "What did you think this was going to be back then?"],
+let kisses = 0;
+let currentArtifact = null;
 
- ["What was the first fight we actually recovered from?",
-  "What’s something about us that surprised you?",
-  "What’s one thing we do that feels uniquely us?"],
-
- ["Which small moment of ours do I secretly love the most?",
-  "When do you feel most at home with me?",
-  "What’s the one word you’d use to describe us on our best day?"],
-
- ["What are you most excited to build together?",
-  "What promise have I already kept without realizing it?",
-  "What would you want us to remember this version of ourselves for?"]
+const questions = [
+  "What moment with me made you feel safe?",
+  "What do you love about us?",
+  "What’s one memory you never want to forget?"
 ];
 
-let room = 0;
-let kisses = 0;
-let answers = [];
+function startGame() {
+  const f = fname.value.trim();
+  const l = lname.value.trim();
+  if (f.toLowerCase() === "amena" && l.toLowerCase() === "farooq") kisses += 10;
 
-function startTour() {
-  const first = document.getElementById("first").value.trim();
-  const last = document.getElementById("last").value.trim();
-  if (!first || !last) return alert("Enter both names");
+  dressLayer.className = "dress " + dress.value;
+  hg.textContent = headgear.value;
 
-  if (first.toLowerCase() === "amena" && last.toLowerCase() === "farooq") {
-    kisses += 10;
-  }
+  start.classList.remove("active");
+  game.classList.add("active");
 
-  localStorage.setItem("avatar", JSON.stringify({ first, last }));
-  show("museum");
-  loadRoom();
-
-  document.getElementById("music").play();
+  music.play().catch(()=>{});
 }
 
-function loadRoom() {
-  document.getElementById("roomTitle").textContent = "Room " + (room + 1);
-  const cont = document.getElementById("artifacts");
-  cont.innerHTML = "";
-
-  rooms[room].forEach((q, i) => {
-    const d = document.createElement("div");
-    d.className = "artifact";
-    d.textContent = "Artifact";
-    d.onclick = () => unlock(q, d);
-    cont.appendChild(d);
-  });
-
-  updateKisses();
+function visitArtifact(i) {
+  currentArtifact = i;
+  avatar.style.left = document.querySelectorAll('.artifact')[i].style.left;
+  setTimeout(()=>{
+    question.textContent = questions[i];
+    modal.style.display = "flex";
+  },1000);
 }
 
-function unlock(question, el) {
-  const a = prompt(question) || "";
-  answers.push({ room: room+1, question, answer: a, time: new Date().toISOString() });
-  el.classList.add("unlocked");
-  el.textContent = "💋";
+function submitAnswer() {
   kisses++;
-  updateKisses();
+  document.querySelectorAll('.artifact')[currentArtifact].classList.remove("locked");
+  document.querySelectorAll('.artifact')[currentArtifact].classList.add("unlocked");
+  modal.style.display = "none";
 
-  if ([...document.querySelectorAll(".artifact")].every(x => x.classList.contains("unlocked"))) {
-    room++;
-    room < rooms.length ? loadRoom() : show("valentine");
+  if (kisses >= questions.length + 1) {
+    game.classList.remove("active");
+    end.classList.add("active");
   }
 }
-
-function updateKisses() {
-  document.getElementById("kissCount").textContent = "💋 " + kisses + " kisses";
-}
-
-document.getElementById("agree").onchange = e =>
-  document.getElementById("finishBtn").disabled = !e.target.checked;
 
 function finish() {
-  show("final");
-  const a = JSON.parse(localStorage.getItem("avatar"));
-  document.getElementById("finalName").textContent = a.first + " " + a.last;
-  document.getElementById("finalKisses").textContent = kisses + " kisses earned";
-}
-
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-function downloadAnswers() {
-  const blob = new Blob([JSON.stringify(answers, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "museum_answers.json";
-  a.click();
+  if (!agree.checked) return;
+  coupon.innerHTML = `
+    <h3>Kiss Coupon</h3>
+    <p>Redeemable for</p>
+    <h1>${kisses} Kisses</h1>
+    <p>Valid forever ❤️</p>
+  `;
 }
 </script>
 
